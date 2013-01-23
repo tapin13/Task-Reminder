@@ -2,16 +2,17 @@ package com.example.taskreminder;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.ListActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
 
-public class ReminderListActivity extends Activity {
+public class ReminderListActivity extends ListActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reminder_list);
+        setContentView(R.layout.reminder_list);
     }
 
     @Override
