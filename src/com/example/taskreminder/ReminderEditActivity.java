@@ -1,45 +1,119 @@
 package com.example.taskreminder;
 
+import com.example.taskreminder.R;
+
+import java.sql.RowId;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.StateSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.PopupWindow;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 
 public class ReminderEditActivity extends Activity {
 
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 	private static final String TIME_FORMAT = "kk:mm";
+	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd kk:mm:ss";
 	
+	private EditText mTitleText;
+	private EditText mBodyText;
 	private Button mDateButton;
 	private Button mTimeButton;
+	private Button mConfirmButton;
+	private Long mRowId;
+	private RemindersDbAdapter mDbHelper;
+	private Calendar mCalendar;
+
 	
 	private static final int DATE_PICKER_DIALOG = 0;
 	private static final int TIME_PICKER_DIALOG = 1;
 
-	private Calendar mCalendar;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		mDbHelper = new RemindersDbAdapter(this);
+		
 		setContentView(R.layout.reminder_edit);
 
 		mCalendar = Calendar.getInstance();
 		
+		mTitleText = (EditText)findViewById(R.id.title);
+		mConfirmButton = (Button)findViewById(R.id.confirm);
+		mBodyText = (EditText)findViewById(R.id.body);
+		
 		mDateButton = (Button)findViewById(R.id.reminder_date);
 		mTimeButton = (Button)findViewById(R.id.reminder_time);
 		
+		mRowId = savedInstanceState != null ? savedInstanceState.getLong(RemindersDbAdapter.KEY_ROWID) : null;
+		
 		registerButtonListenersAndSetDefaultText();
 		
+	}
+	
+	private void setRowIdFromIntent() {
+		if(mRowId != null) {
+			Bundle extras = getIntent().getExtras();
+			mRowId = extras != null ? extras.getLong(RemindersDbAdapter.KEY_ROWID) :  null;
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mDbHelper.close();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mDbHelper.open();
+		setRowIdFromIntent();
+		populateFields();
+	}
+	
+	private void populateFields() {
+		if(mRowId != null) {
+			Cursor reminder = mDbHelper.fetchReminder(mRowId);
+			startManagingCursor(reminder);
+			mTitleText.setText(reminder.getString(reminder.getColumnIndexOrThrow(RemindersDbAdapter.KEY_TITLE)));
+			mBodyText.setText(reminder.getString(reminder.getColumnIndexOrThrow(RemindersDbAdapter.KEY_BODY)));
+			SimpleDateFormat dateTimeFormat = new SimpleDateFormat(DATE_TIME_FORMAT); 
+			Date date = null;
+			try {
+				String dateString = reminder.getString(reminder.getColumnIndexOrThrow(RemindersDbAdapter.KEY_DATA_TIME));
+				date = dateTimeFormat.parse(dateString);
+				mCalendar.setTime(date);
+			} catch (ParseException e) {
+				Log.e("ReminderEditActivity", e.getMessage(), e);
+			}
+		}
+		
+		updateDateButtonText();
+		updateTimeButtonText();
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putLong(RemindersDbAdapter.KEY_ROWID, mRowId);
 	}
 	
 	private void registerButtonListenersAndSetDefaultText() {
@@ -49,12 +123,26 @@ public class ReminderEditActivity extends Activity {
 				showDialog(DATE_PICKER_DIALOG);
 			}
 		});
+		
 		mTimeButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				showDialog(TIME_PICKER_DIALOG);
 			}
 		});
+		
+		mConfirmButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				saveState();
+				setResult(RESULT_OK);
+				Toast.makeText(ReminderEditActivity.this
+						, getString(R.string.task_saved_message)
+						, Toast.LENGTH_SHORT).show();
+				finish();
+			}
+		});
+		
 		updateDateButtonText();
 		updateTimeButtonText();
 	}
@@ -113,6 +201,25 @@ public class ReminderEditActivity extends Activity {
 		SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT);
 		String timeForButton = timeFormat.format(mCalendar.getTime());
 		mTimeButton.setText(timeForButton);
+	}
+
+	private void saveState() {
+		String title = mTitleText.getText().toString();
+		String body = mBodyText.getText().toString();
+		
+		SimpleDateFormat dateTimeFormat = new 
+			SimpleDateFormat(DATE_TIME_FORMAT);
+		String reminderDateTime = 
+			dateTimeFormat.format(mCalendar.getTime());
+		
+		if(mRowId == null) {
+			long id = mDbHelper.createReminder(title, body, reminderDateTime);
+			if(id > 0) {
+				mRowId = id;
+			}
+		} else {
+			mDbHelper.updateReminder(mRowId, title, body, reminderDateTime);
+		}
 	}
 	
 }
