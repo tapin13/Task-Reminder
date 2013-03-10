@@ -64,7 +64,6 @@ public class ReminderListActivity extends ListActivity {
 
 	@Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-    	Log.v(TAG, "l:" + l + " v: " + v + " p: " + position + " id: " + id);
     	super.onListItemClick(l, v, position, id);
     	
     	Intent i = new Intent(this, ReminderEditActivity.class);
@@ -86,7 +85,6 @@ public class ReminderListActivity extends ListActivity {
 				mDbHelper.deleteReminder(info.id);
 				fillData();
 				
-				Log.v(TAG, "menu_delete pressed");
 				return true;
     	}
     	
@@ -113,7 +111,6 @@ public class ReminderListActivity extends ListActivity {
     public boolean onMenuItemSelected(int featuredId, MenuItem item) {
     	switch (item.getItemId()) {
 		case R.id.menu_insert:
-			Log.v(TAG, "menu_insert pressed");
 			createReminder();
 			return true;
 		}

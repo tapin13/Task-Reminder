@@ -27,7 +27,8 @@ import android.widget.Toast;
 
 
 public class ReminderEditActivity extends Activity {
-
+	private static final String TAG = "Reminder";
+	
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 	private static final String TIME_FORMAT = "kk:mm";
 	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd kk:mm:ss";
@@ -54,7 +55,7 @@ public class ReminderEditActivity extends Activity {
 		setContentView(R.layout.reminder_edit);
 
 		mCalendar = Calendar.getInstance();
-		
+
 		mTitleText = (EditText)findViewById(R.id.title);
 		mConfirmButton = (Button)findViewById(R.id.confirm);
 		mBodyText = (EditText)findViewById(R.id.body);
@@ -63,13 +64,13 @@ public class ReminderEditActivity extends Activity {
 		mTimeButton = (Button)findViewById(R.id.reminder_time);
 		
 		mRowId = savedInstanceState != null ? savedInstanceState.getLong(RemindersDbAdapter.KEY_ROWID) : null;
-		
+
 		registerButtonListenersAndSetDefaultText();
 		
 	}
 	
 	private void setRowIdFromIntent() {
-		if(mRowId != null) {
+		if(mRowId == null) {
 			Bundle extras = getIntent().getExtras();
 			mRowId = extras != null ? extras.getLong(RemindersDbAdapter.KEY_ROWID) :  null;
 		}
@@ -147,12 +148,6 @@ public class ReminderEditActivity extends Activity {
 		updateTimeButtonText();
 	}
 
-	private static final int ACTIVITY_CREATE = 0;
-	private void createReminder() {
-		Intent i = new Intent(this, ReminderEditActivity.class);
-		startActivityForResult(i, ACTIVITY_CREATE);
-	}
-	
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch(id) {
