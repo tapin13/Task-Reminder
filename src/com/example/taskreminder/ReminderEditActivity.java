@@ -215,6 +215,9 @@ public class ReminderEditActivity extends Activity {
 		} else {
 			mDbHelper.updateReminder(mRowId, title, body, reminderDateTime);
 		}
+		
+		new ReminderManager(this).setReminder(mRowId, mCalendar);
+			
 	}
 	
 }
