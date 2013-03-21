@@ -50,6 +50,8 @@ public final class R {
         public static final int menu_insert=0x7f05000a;
         public static final int menu_settings=0x7f050001;
         public static final int no_reminders=0x7f050003;
+        public static final int notify_new_task_message=0x7f05000e;
+        public static final int notify_new_task_title=0x7f05000d;
         public static final int task_saved_message=0x7f05000c;
         public static final int time=0x7f050009;
         public static final int title=0x7f050004;

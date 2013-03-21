@@ -24,8 +24,8 @@ public class OnBootReceiver extends BroadcastReceiver {
 			int rowIdColumnIndex = cursor.getColumnIndex(RemindersDbAdapter.KEY_ROWID);
 			int dateTimeColumnIndex = cursor.getColumnIndex(RemindersDbAdapter.KEY_DATA_TIME);
 			while (cursor.isAfterLast() == false) {
-				Log.d("OnBootReceiver", "Add alarm from boot.");
-				Log.d("OnBootReceiver", "Row Id Column Index - " + rowIdColumnIndex);
+				Log.d("Reminder", "Add alarm from boot.");
+				Log.d("Reminder", "Row Id Column Index - " + rowIdColumnIndex);
 				
 				Long rowId = cursor.getLong(rowIdColumnIndex);
 				String dateTime = cursor.getString(dateTimeColumnIndex);
@@ -39,7 +39,7 @@ public class OnBootReceiver extends BroadcastReceiver {
 				
 					reminderMgr.setReminder(rowId, cal);
 				} catch (ParseException e) {
-					Log.e("OnBootReceiver", e.getMessage(), e);
+					Log.e("Reminder", e.getMessage(), e);
 				}
 				
 				cursor.moveToNext();

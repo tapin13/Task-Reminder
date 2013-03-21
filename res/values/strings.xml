@@ -16,5 +16,8 @@
 	<string name="menu_delete">Delete Reminder</string>
 	
 	<string name="task_saved_message">Task Saved</string>
-    
+	
+	<string name="notify_new_task_title">Task Reminder</string>
+	<string name="notify_new_task_message">A task needs to be reviewed!</string>
+	
 </resources>
