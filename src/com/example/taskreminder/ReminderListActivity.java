@@ -110,9 +110,13 @@ public class ReminderListActivity extends ListActivity {
     @Override
     public boolean onMenuItemSelected(int featuredId, MenuItem item) {
     	switch (item.getItemId()) {
-		case R.id.menu_insert:
-			createReminder();
-			return true;
+			case R.id.menu_insert:
+				createReminder();
+				return true;
+			case R.id.menu_settings:
+				Intent i = new Intent(this, TaskPreferences.class);
+				startActivity(i);
+				return true;
 		}
     	
     	return super.onMenuItemSelected(featuredId, item);

@@ -13,8 +13,11 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.StateSet;
 import android.view.View;
@@ -104,6 +107,22 @@ public class ReminderEditActivity extends Activity {
 				mCalendar.setTime(date);
 			} catch (ParseException e) {
 				Log.e("ReminderEditActivity", e.getMessage(), e);
+			}
+		} else {
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			
+			String defaultTitleKey = getString(R.string.pref_task_title_key);
+			String defaultTimeKey = getString(R.string.pref_default_time_from_now_key);
+			
+			String defaulTitle = prefs.getString(defaultTitleKey, "");
+			String defaulTime = prefs.getString(defaultTimeKey, "");
+			
+			if("".equals(defaulTitle) == false) {
+				mTitleText.setText(defaulTitle);
+			}
+			
+			if("".equals(defaulTime) == false) {
+				mCalendar.add(Calendar.MINUTE, Integer.parseInt(defaulTime));
 			}
 		}
 		
